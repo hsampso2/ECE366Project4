@@ -35,7 +35,7 @@ while i < len(pattern):
     i = i + 1
 i = 0 #PC
 while i < 4096:
-    print("Instruction Line " + str(i) + ": " + "R[0]->" + str(register[0]) + " " + "R[1]->" + str(register[1]) + " " + "R[2]->" + str(register[2]) + " " + "R[3]->" + str(register[3]) + "\n")
+    print("Instruction Line " + str(i) + ": " + "R[0]->" + str(register[0]) + " " + "R[1]->" + str(register[1]) + " " + "R[2]->" + str(register[2]) + " " + "R[3]->" + str(register[3]) + " " + "R[4]->" + str(register[4]) + " " + "R[5]->" + str(register[5]) + " " + "R[6]->" + str(register[6]) + " " + "R[7]->" + str(register[7]) + "\n")
     if (instruction_Memory[i][0:6] == '000000' and instruction_Memory[i][26:32] == '100000'):  # add
         Cycle += 4
         fourCycles += 1
@@ -61,13 +61,13 @@ while i < 4096:
         Cycle += 3
         threeCycles += 1
         imm = int(instruction_Memory[i][16:32], 2) if instruction_Memory[i][16] == '0' else -(65535 - int(instruction_Memory[i][16:32], 2) + 1)
-        i = i + imm - 1 if (register[int(instruction_Memory[i][6:11], 2)] == register[int(instruction_Memory[i][11:16], 2)]) else i
+        i = i + imm if (register[int(instruction_Memory[i][6:11], 2)] == register[int(instruction_Memory[i][11:16], 2)]) else i
 
     elif (instruction_Memory[i][0:6] == '000101'):  # bne
         Cycle += 3
         threeCycles += 1
         imm = int(instruction_Memory[i][16:32], 2) if instruction_Memory[i][16] == '0' else -(65535 - int(instruction_Memory[i][16:32], 2) + 1)
-        i = i + imm - 1 if (register[int(instruction_Memory[i][6:11], 2)] != register[int(instruction_Memory[i][11:16], 2)]) else i
+        i = i + imm if (register[int(instruction_Memory[i][6:11], 2)] != register[int(instruction_Memory[i][11:16], 2)]) else i
 
     elif (instruction_Memory[i][0:6] == '000000' and instruction_Memory[i][26:32] == '101010'):  # slt
         Cycle += 4
@@ -94,7 +94,7 @@ while i < 4096:
 
     instruction_Count = instruction_Count + 1
     i = i + 1
-print("Instruction Line " + str(i) + ": " + "R[0]->" + str(register[0]) + " " + "R[1]->" + str(register[1]) + " " + "R[2]->" + str(register[2]) + " " + "R[3]->" + str(register[3]) + "\n")
+print("Instruction Line " + str(i) + ": " + "R[0]->" + str(register[0]) + " " + "R[1]->" + str(register[1]) + " " + "R[2]->" + str(register[2]) + " " + "R[3]->" + str(register[3]) + "R[4]->" + str(register[4]) + " " + "R[5]->" + str(register[5]) + " " + "R[6]->" + str(register[6]) + "R[7]->" + str(register[7]) + "\n")
 output_file.write("Instruction Count: " + str(instruction_Count) + "\n" + "\n")
 output_file.write("Cycles: " + str(Cycle) + "\n" + "\n")
 output_file.write("3 Cycle: " + str(threeCycles) + "\n" + "\n")
