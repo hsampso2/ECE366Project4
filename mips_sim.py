@@ -78,11 +78,11 @@ def simulate(InstructionBin,InstructionHex):
     wordSize = []
     i = 0
     while i < word: #create cache
-        wordSize.append(0)
+        wordSize.append(" ")
         i = i + 1
     i = 0
     while i < block:
-        cache.append(size)
+        cache.append(wordSize)
         i = i + 1
     print("***Starting simulation***")
     print("Instruction by instruction information:")
@@ -196,11 +196,28 @@ def simulate(InstructionBin,InstructionHex):
             PC += 1
             Cycle += 5
             fiveCycles += 1
-            cached =  False
+            cached = False
+            i = 0
+            while i < len(cache):
+                j = 0
+                while j < len(wordSize):
+                    if (cache[i][j] == Memory[imm + Register[int(fetch[6:11],2)] - 8192]):
+                        Register[int(fetch[11:16], 2)] = cache[i][j]
+                        cached = True
+                        hit = hit + 1
+                    j = j + 1
+                i = i + 1
 
-            if(cached):
-                Register[int(fetch[11:16],2)] = Memory[imm + Register[int(fetch[6:11],2)] - 8192] # Load memory into register
- 
+            if(not cached):
+                Register[int(fetch[11:16], 2)] = Memory[imm + Register[int(fetch[6:11],2)] - 8192] # Load memory into register
+                i = (imm + Register[int(fetch[6:11],2)] - 8192) % (block * word)
+                i = i % block
+                j = (imm + Register[int(fetch[6:11],2)] - 8192) % (block * word)
+                j = j % word
+                cache[i][j] = Memory[imm + Register[int(fetch[6:11],2)] - 8192]
+                miss = miss + 1
+            hitRate = (hit / (hit + miss)) * 100
+
     print("***Finished simulation***")
     print("Total # of cycles in Multi-Cycle: " + str(Cycle))
     print("Total # of cycles in Single Cycle: " + str(DIC))
