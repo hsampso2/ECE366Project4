@@ -14,65 +14,17 @@ mem_space = 4096 # Memory addr starts from 2000 , ends at 3000.  Hence total spa
 # debugMode = True or False (user chooses debug mode or execution)
 
 def simulate(InstructionBin,InstructionHex):
-    inputActive = False
-    userInput = int(input(
-        'Choose by inputting one of the following numbers:\n2 = Block Size 2\n4 = block size 4\n'))
-    while (not (inputActive)):
-        if userInput == 2:
-            block = 2
-            inputActive = True
-        elif userInput == 4:
-            block = 4
-            inputActive = True
-        else:
-            print("Please enter the correct number. Try again.")
-            userInput = input(
-                'Choose by inputting one of the following numbers:\n2 = Block Size 2\n4 = block size 4\n')
+    block = int(input(
+        'Choose number of blocks\n'))
 
-    inputActive = False
-    userInput = int(input(
-        'Choose by inputting one of the following numbers:\n2 = Word Size 2\n4 = Word size 4\n'))
-    while (not (inputActive)):
-        if userInput == 2:
-            word = 2
-            inputActive = True
-        elif userInput == 4:
-            word = 4
-            inputActive = True
-        else:
-            print("Please enter the correct number. Try again.")
-            userInput = input(
-                'Choose by inputting one of the following numbers:\n2 = Word Size 2\n4 = Word size 4\n')
+    word = int(input(
+        'Choose number of words per block\n'))
 
-    inputActive = False
-    userInput = int(input(
-        'Choose by inputting one of the following numbers:\n1 = One-Way\n2 = Two-Way\n'))
-    while (not (inputActive)):
-        if userInput == 1:
-            ways = 1
-            inputActive = True
-        elif userInput == 2:
-            ways = 2
-            inputActive = True
-        else:
-            print("Please enter the correct number. Try again.")
-            userInput = input(
-                'Choose by inputting one of the following numbers:\n1 = One-Way\n2 = Two-Way\n')
+    ways = int(input(
+        'Choose number of ways\n'))
 
-    inputActive = False
-    userInput = int(input(
-        'Choose by inputting one of the following numbers:\n2 = 2 sets\n4 = 4 sets\n'))
-    while (not (inputActive)):
-        if userInput == 2:
-            sets = 2
-            inputActive = True
-        elif userInput == 4:
-            sets = 4
-            inputActive = True
-        else:
-            print("Please enter the correct number. Try again.")
-            userInput = input(
-                'Choose by inputting one of the following numbers:\n2 = 2 sets\n4 = 4 sets\n')
+    sets = int(input(
+        'Choose number of sets\n'))
 
     cache = []
     wordSize = []
@@ -204,7 +156,6 @@ def simulate(InstructionBin,InstructionHex):
                     if (cache[i][j] == Memory[imm + Register[int(fetch[6:11],2)] - 8192]):
                         Register[int(fetch[11:16], 2)] = cache[i][j]
                         cached = True
-                        hit = hit + 1
                     j = j + 1
                 i = i + 1
 
@@ -215,7 +166,9 @@ def simulate(InstructionBin,InstructionHex):
                 j = (imm + Register[int(fetch[6:11],2)] - 8192) % (block * word)
                 j = j % word
                 cache[i][j] = Memory[imm + Register[int(fetch[6:11],2)] - 8192]
+                hit = hit - 1
                 miss = miss + 1
+            hit = hit + 1
             hitRate = (hit / (hit + miss)) * 100
 
     print("***Finished simulation***")
@@ -237,7 +190,7 @@ def simulate(InstructionBin,InstructionHex):
     print("PC = " + str(PC*4))
     print("Total # of hits: " + str(hit))
     print("Total # of misses: " + str(miss))
-    print("Total % of hit rate: " + str(hitRate))
+    print("Total % of hit rate: " + str(hitRate) + "%")
 
 def main():
     print("Welcome to ECE366 sample MIPS_sim, choose the mode of running i_mem.txt: ")
