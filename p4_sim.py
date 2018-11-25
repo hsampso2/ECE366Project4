@@ -15,26 +15,28 @@ mem_space = 4096 # Memory addr starts from 2000 , ends at 3000.  Hence total spa
 
 def simulate(InstructionBin,InstructionHex, output_file):
     block = int(input(
-        'Choose number of blocks\n'))
-
+        'Choose number of sets\n'))
+    ways = int(input(
+        'Choose number of blocks per set (ways)\n'))
     word = int(input(
         'Choose number of words per block\n'))
 
-    ways = int(input(
-        'Choose number of ways\n'))
 
-    sets = int(input(
-        'Choose number of sets\n'))
 
     cache = []
     wordSize = []
+    waySize = []
     i = 0
     while i < word: #create cache
         wordSize.append(0)
         i = i + 1
     i = 0
+    while i < ways:
+        waySize.append(wordSize)
+        i = i + 1
+    i = 0
     while i < block:
-        cache.append(wordSize)
+        cache.append(waySize)
         i = i + 1
     print("***Starting simulation***")
     print("Instruction by instruction information:")
@@ -150,22 +152,44 @@ def simulate(InstructionBin,InstructionHex, output_file):
             fiveCycles += 1
             cached = False
             i = 0
+            w = 0
+            j = 0
             while i < len(cache):
-                j = 0
-                while j < len(wordSize):
-                    if (cache[i][j] == Memory[imm + Register[int(fetch[6:11],2)] - 8192]):
-                        Register[int(fetch[11:16], 2)] = cache[i][j]
-                        cached = True
-                    j = j + 1
+                w = 0
+                while w < len(waySize):
+                    j = 0
+                    while j < len(wordSize):
+                        if (cache[i][w][j] == Memory[imm + Register[int(fetch[6:11],2)] - 8192]):
+                            Register[int(fetch[11:16], 2)] = cache[i][w][j]
+                            cached = True
+                        j = j + 1
+                    w = w + 1
                 i = i + 1
-
+            w = 0
             if(not cached):
                 Register[int(fetch[11:16], 2)] = Memory[imm + Register[int(fetch[6:11],2)] - 8192] # Load memory into register
                 i = (imm + Register[int(fetch[6:11],2)] - 8192) % (block * word)
                 i = i % block
                 j = (imm + Register[int(fetch[6:11],2)] - 8192) % (block * word)
                 j = j % word
-                cache[i][j] = Memory[imm + Register[int(fetch[6:11],2)] - 8192]
+                while cache[i][w][j] != 0:
+                    w = w + 1
+                    if(w == len(waySize)):
+                        w = 0
+                        break
+                k = 0
+                cache[i][w][j] = Memory[imm + Register[int(fetch[6:11], 2)] - 8192]
+                while j != 0:
+                    j = j - 1
+                    k = k + 1
+                    cache[i][w][j] = Memory[imm + Register[int(fetch[6:11], 2)] - 8192 - k]
+                j = (imm + Register[int(fetch[6:11], 2)] - 8192) % (block * word)
+                j = j % word
+                k = 0
+                while j != word - 1:
+                    k = k + 1
+                    j = j + 1
+                    cache[i][w][j] = Memory[imm + Register[int(fetch[6:11], 2)] - 8192 + k]
                 hit = hit - 1
                 miss = miss + 1
             hit = hit + 1
@@ -191,14 +215,7 @@ def simulate(InstructionBin,InstructionHex, output_file):
     print("Total # of hits: " + str(hit))
     print("Total # of misses: " + str(miss))
     print("Total % of hit rate: " + str(hitRate) + "%")
-    i = 0
-    while i < len(cache):
-        j = 0
-        while j < len(wordSize):
-            print(str(cache[i][j]) + " ")
-            j = j + 1
-        print("____________")
-        i = i + 1
+
 
 
     output_file.write("***Finished simulation***"+ "\n")
@@ -224,12 +241,17 @@ def simulate(InstructionBin,InstructionHex, output_file):
     output_file.write("Cache Contents *each row is a block" + "\n")
     i = 0
     while i < len(cache):
-        j = 0
-        while j < len(wordSize):
-            output_file.write(str(cache[i][j]) + " ")
-            j = j + 1
-        output_file.write("\n")
+        w = 0
+        while w < len(waySize):
+            j = 0
+            while j < len(wordSize):
+                output_file.write(str(cache[i][w][j]) + " ")
+                j = j + 1
+            output_file.write("\n")
+            w = w + 1
         i = i + 1
+        output_file.write("------------------------------------------------------------------------------------")
+        output_file.write("\n")
 def main():
     print("Welcome to ECE366 sample MIPS_sim, choose the mode of running i_mem.txt: ")
      #debugMode =True if  int(input("1 = debug mode         2 = normal execution\n"))== 1 else False
