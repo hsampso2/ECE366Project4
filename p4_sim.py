@@ -175,7 +175,8 @@ def simulate(InstructionBin,InstructionHex, output_file):
                 while cache[i][w][j] != 0:
                     w = w + 1
                     if(w == len(waySize)):
-                        w = 0
+                        from random import randint
+                        w = randint(0, len(waySize) - 1)
                         break
                 k = 0
                 cache[i][w][j] = Memory[imm + Register[int(fetch[6:11], 2)] - 8192]
