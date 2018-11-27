@@ -21,11 +21,15 @@ def simulate(InstructionBin,InstructionHex, output_file):
     word = int(input(
         'Choose number of words per block\n'))
 
-
-
+    historySets = []
+    history = []
     cache = []
     wordSize = []
     waySize = []
+    i = 0
+    while i < block:
+        historySets.append(history)
+        i = i + 1
     i = 0
     while i < word: #create cache
         wordSize.append(0)
@@ -175,9 +179,10 @@ def simulate(InstructionBin,InstructionHex, output_file):
                 while cache[i][w][j] != 0:
                     w = w + 1
                     if(w == len(waySize)):
-                        from random import randint
-                        w = randint(0, len(waySize) - 1)
+                        w = historySets[i][len(history) - 1]
+                        historySets[i].remove(w)
                         break
+                historySets[i].append(w)
                 k = 0
                 cache[i][w][j] = Memory[imm + Register[int(fetch[6:11], 2)] - 8192]
                 while j != 0:
