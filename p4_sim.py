@@ -179,7 +179,7 @@ def simulate(InstructionBin,InstructionHex, output_file):
                 while cache[i][w][j] != 0:
                     w = w + 1
                     if(w == len(waySize)):
-                        w = historySets[i][len(history) - 1]
+                        w = historySets[i][0]
                         historySets[i].remove(w)
                         break
                 historySets[i].append(w)
